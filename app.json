@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "READelivery",
+    "slug": "readdelivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo-icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6366f1"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-icon.png",
+        "backgroundColor": "#6366f1"
+      }
+    },
+    "web": {
+      "favicon": "./assets/logo-icon.png"
+    },
+    "platforms": ["ios", "android", "web"]
+  }
+}
