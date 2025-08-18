@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import DashboardScreen from './src/screens/DashboardScreen'; // This is now DeliveriesScreen
+import { useState, useEffect } from 'react';
+import { auth } from './src/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import DashboardScreen from './src/screens/DashboardScreen';
 import DeliveryDetailsScreen from './src/screens/DeliveryDetailsScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -8,7 +10,6 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 
-// Theme configurations
 const lightTheme = {
   isDark: false,
   colors: {
@@ -49,6 +50,19 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('Welcome');
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        setCurrentScreen('Home');
+      } else {
+        setCurrentScreen('Welcome');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
@@ -89,26 +103,28 @@ export default function App() {
     setCurrentScreen('DeliveryDetails');
   };
 
-  if (currentScreen === 'Login') {
-    return (
-      <LoginScreen
-        onBack={navigateToWelcome}
-        onSignupPress={navigateToSignup}
-        onContinue={navigateToHome}
-        theme={theme}
-      />
-    );
-  }
-
-  if (currentScreen === 'Signup') {
-    return (
-      <SignupScreen
-        onBack={navigateToWelcome}
-        onLoginPress={navigateToLogin}
-        onContinue={navigateToHome}
-        theme={theme}
-      />
-    );
+  if (!user) {
+    if (currentScreen === 'Login') {
+      return (
+        <LoginScreen
+          onBack={navigateToWelcome}
+          onSignupPress={navigateToSignup}
+          onContinue={() => {}}
+          theme={theme}
+        />
+      );
+    }
+    if (currentScreen === 'Signup') {
+      return (
+        <SignupScreen
+          onBack={navigateToWelcome}
+          onLoginPress={navigateToLogin}
+          onContinue={() => {}}
+          theme={theme}
+        />
+      );
+    }
+    return <WelcomeScreen onLoginPress={navigateToLogin} theme={theme} />;
   }
 
   if (currentScreen === 'Home') {
@@ -122,7 +138,6 @@ export default function App() {
       />
     );
   }
-
   if (currentScreen === 'Notifications') {
     return (
       <NotificationsScreen
@@ -131,7 +146,6 @@ export default function App() {
       />
     );
   }
-
   if (currentScreen === 'Deliveries') {
     return (
       <DashboardScreen
@@ -143,7 +157,6 @@ export default function App() {
       />
     );
   }
-
   if (currentScreen === 'DeliveryDetails') {
     return (
       <DeliveryDetailsScreen
@@ -155,7 +168,6 @@ export default function App() {
       />
     );
   }
-
   if (currentScreen === 'Profile') {
     return (
       <ProfileScreen
@@ -166,6 +178,5 @@ export default function App() {
       />
     );
   }
-
   return <WelcomeScreen onLoginPress={navigateToLogin} theme={theme} />;
 }

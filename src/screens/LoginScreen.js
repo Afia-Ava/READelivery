@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import {
   SafeAreaView,
   StatusBar,
@@ -17,7 +19,21 @@ export default function LoginScreen({
 }) {
   const [phoneOrEmail, setPhoneOrEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const styles = createStyles(theme);
+
+  const handleLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, phoneOrEmail, password);
+    } catch (e) {
+      setError('Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,7 +53,7 @@ export default function LoginScreen({
 
         <TextInput
           style={styles.input}
-          placeholder="Phone number or email"
+          placeholder="Email"
           value={phoneOrEmail}
           onChangeText={setPhoneOrEmail}
           keyboardType="email-address"
@@ -52,8 +68,20 @@ export default function LoginScreen({
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.continueButton} onPress={onContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
+        {error ? (
+          <Text style={{ color: 'red', textAlign: 'center', marginBottom: 10 }}>
+            {error}
+          </Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.continueButtonText}>
+            {loading ? 'Logging in...' : 'Continue'}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.signUpContainer}>

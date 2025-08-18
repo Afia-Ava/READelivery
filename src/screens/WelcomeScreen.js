@@ -17,7 +17,7 @@ export default function WelcomeScreen({ onLoginPress, theme }) {
         barStyle={theme.colors.statusBarContent}
       />
       <Image
-        source={require('../../assets/logo-icon.png')}
+        source={require('../../READ_WithMe_Web.png')}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -43,10 +43,10 @@ const createStyles = theme =>
       paddingHorizontal: 24,
     },
     logo: {
-      width: 140,
-      height: 140,
-      marginTop: -60,
-      marginBottom: 36,
+      width: 240,
+      height: 240,
+      marginTop: 20,
+      marginBottom: 16,
     },
     title: {
       fontSize: 24,
@@ -65,7 +65,7 @@ const createStyles = theme =>
     tagline: {
       fontSize: 12,
       color: theme.colors.textTertiary,
-      marginBottom: 40,
+      marginBottom: 20,
       textAlign: 'center',
       fontWeight: '300',
     },

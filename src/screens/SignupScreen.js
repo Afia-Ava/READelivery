@@ -1,3 +1,4 @@
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
   FlatList,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { auth } from '../firebase';
 
 export default function SignupScreen({
   onBack,
@@ -23,6 +25,29 @@ export default function SignupScreen({
   const [phoneOrEmail, setPhoneOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    setError('');
+    if (!name || !gender || !phoneOrEmail || !password || !confirmPassword) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, phoneOrEmail, password);
+      // Auth state will update in App.js
+    } catch (e) {
+      setError('Signup failed. Please use a valid email and password.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const genderOptions = ['Male', 'Female', 'Other', 'Prefer not to say'];
 
@@ -65,7 +90,7 @@ export default function SignupScreen({
 
         <TextInput
           style={styles.input}
-          placeholder="Phone number or email"
+          placeholder="Email"
           value={phoneOrEmail}
           onChangeText={setPhoneOrEmail}
           keyboardType="email-address"
@@ -88,8 +113,20 @@ export default function SignupScreen({
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.continueButton} onPress={onContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
+        {error ? (
+          <Text style={{ color: 'red', textAlign: 'center', marginBottom: 10 }}>
+            {error}
+          </Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleSignup}
+          disabled={loading}
+        >
+          <Text style={styles.continueButtonText}>
+            {loading ? 'Signing up...' : 'Continue'}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.signUpContainer}>
